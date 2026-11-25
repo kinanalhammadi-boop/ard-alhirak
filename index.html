@@ -162,7 +162,7 @@
                         </div>
                         <div>
                             <p class="text-amber-200 text-xs font-medium">إجمالي المدفوع</p>
-                            <p id="stat-total-paid" class="text-lg sm:text-xl font-heading font-extrabold text-amber-300">\$0</p>
+                            <p id="stat-total-paid" class="text-lg sm:text-xl font-heading font-extrabold text-amber-300">$0</p>
                         </div>
                     </div>
                     <i data-lucide="chevron-left" class="w-4 h-4 text-amber-200 shrink-0"></i>
@@ -273,7 +273,7 @@
                     </div>
                     <div class="bg-white px-4 py-2 rounded-xl border border-amber-200 shadow-sm">
                         <span class="text-xs text-slate-500 ml-2">المجموع المعروض:</span>
-                        <span id="filtered-payments-total" class="font-heading font-extrabold text-base text-emerald-700">\$0.00</span>
+                        <span id="filtered-payments-total" class="font-heading font-extrabold text-base text-emerald-700">$0</span>
                     </div>
                 </div>
 
@@ -299,4 +299,525 @@
 
     <!-- نافذة عرض التفاصيل الكاملة -->
     <div id="detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-
+        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden" onclick="event.stopPropagation()">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/70">
+                <div>
+                    <div id="detail-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2"></div>
+                    <h3 id="detail-title" class="font-heading font-bold text-xl text-slate-800 leading-snug"></h3>
+                </div>
+                <button onclick="closeDetailModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">وصف المرحلة والتفاصيل</h4>
+                    <p id="detail-description" class="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100"></p>
+                </div>
+
+                <div class="bg-emerald-50/60 border border-emerald-200/80 rounded-2xl p-4 space-y-3">
+                    <h4 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                        <i data-lucide="banknote" class="w-4 h-4 text-emerald-600"></i>
+                        بيانات الدفعة المالية
+                    </h4>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                            <span class="text-[11px] text-slate-400 block">المبلغ المدفوع</span>
+                            <span id="detail-amount" class="font-heading font-extrabold text-sm text-emerald-700">-</span>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                            <span class="text-[11px] text-slate-400 block">الجهة الدافعة</span>
+                            <span id="detail-payer" class="font-bold text-xs text-slate-700">-</span>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                            <span class="text-[11px] text-slate-400 block">طبيعة الدفع</span>
+                            <span id="detail-payment-type" class="font-bold text-xs text-amber-700">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                        <span class="text-xs text-slate-400 block mb-1">التاريخ / الجدول الزمني</span>
+                        <span id="detail-date" class="font-bold text-sm text-slate-700 flex items-center gap-1.5"></span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                        <span class="text-xs text-slate-400 block mb-1">مستوى الأولوية</span>
+                        <span id="detail-priority" class="font-bold text-sm text-slate-700 flex items-center gap-1.5"></span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center justify-between">
+                    <span class="text-xs text-slate-500">المسار / القسم المسؤول:</span>
+                    <span id="detail-category" class="text-xs font-bold px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-700"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span>بوابة متابعة مشروع <strong>أرض الحراك</strong> — جميع الحقوق محفوظة © 2026</span>
+            </div>
+            <p class="text-xs text-slate-400">مرتبطة مركزياً بقاعدة بيانات Google Sheets السحابية</p>
+        </div>
+    </footer>
+
+    <script>
+        const SHEET_ID = "1EixQRu-g_njuIGjd7xiQDg2QQ7svCmr3nKm6OkxseMk";
+        let milestones = [];
+        let currentFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            document.getElementById('detail-modal').addEventListener('click', closeDetailModal);
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetailModal(); });
+        });
+
+        function normalizeStatus(rawStatus) {
+            const s = (rawStatus || '').trim().toLowerCase();
+            if (s === 'completed' || s.includes('منجز') || s.includes('تم') || s.includes('مكتمل')) return 'completed';
+            if (s === 'in_progress' || s.includes('قيد') || s.includes('جاري')) return 'in_progress';
+            return 'upcoming';
+        }
+
+        function normalizePriority(rawPriority) {
+            const p = (rawPriority || '').trim().toLowerCase();
+            if (p === 'high' || p.includes('عالي') || p.includes('مرتفع')) return 'high';
+            if (p === 'low' || p.includes('منخفض') || p.includes('اعتياد')) return 'low';
+            return 'medium';
+        }
+
+        function mapRowObjects(matrix) {
+            if (!matrix || matrix.length < 2) return [];
+            // اكتشاف صف العناوين تلقائياً (سواء كان الصف 0 أو الصف 1)
+            let headerRowIdx = 0;
+            const knownKeys = ['title', 'description', 'status', 'amount', 'payer', 'payment_type', 'العنوان', 'المبلغ'];
+            for (let i = 0; i < Math.min(2, matrix.length); i++) {
+                const rowLower = matrix[i].map(v => String(v || '').trim().toLowerCase());
+                if (rowLower.some(cell => knownKeys.includes(cell))) {
+                    headerRowIdx = i;
+                    break;
+                }
+            }
+
+            const headers = matrix[headerRowIdx].map(h => String(h || '').trim().toLowerCase());
+            const parsed = [];
+
+            for (let r = headerRowIdx + 1; r < matrix.length; r++) {
+                const rowVals = matrix[r];
+                const raw = {};
+                headers.forEach((h, i) => {
+                    if (h) raw[h] = String(rowVals[i] ?? '').trim();
+                });
+
+                // دعم الترتيب الثابت للأعمدة (A=0..J=9) كخيار احتياطي إذا لم تتطابق أسماء الرؤوس
+                const amountVal = raw['amount'] || raw['amount usd'] || raw['amount_usd'] || raw['المبلغ'] || String(rowVals[7] ?? '').trim();
+                const titleVal = raw['title'] || raw['العنوان'] || String(rowVals[1] ?? '').trim();
+                const descVal = raw['description'] || raw['الوصف'] || String(rowVals[2] ?? '').trim();
+                const statusVal = raw['status'] || raw['الحالة'] || String(rowVals[3] ?? '').trim();
+                const dateVal = raw['date'] || raw['التاريخ'] || String(rowVals[4] ?? '').trim();
+                const priorityVal = raw['priority'] || raw['الأولوية'] || String(rowVals[5] ?? '').trim();
+                const categoryVal = raw['category'] || raw['التصنيف'] || String(rowVals[6] ?? '').trim();
+                const payerVal = raw['payer'] || raw['الدافع'] || String(rowVals[8] ?? '').trim();
+                const typeVal = raw['payment_type'] || raw['نوع الدفعة'] || String(rowVals[9] ?? '').trim();
+
+                if (!titleVal && !descVal && parseAmountNumber(amountVal) === 0) continue;
+
+                parsed.push({
+                    id: raw['id'] && raw['id'] !== '' ? raw['id'] : String(r + 1),
+                    title: titleVal || 'بند بدون عنوان',
+                    description: descVal,
+                    status: normalizeStatus(statusVal),
+                    date: dateVal,
+                    priority: normalizePriority(priorityVal),
+                    category: categoryVal || 'عام',
+                    amount: amountVal,
+                    payer: payerVal,
+                    payment_type: typeVal
+                });
+            }
+            return parsed;
+        }
+
+        window.handleSheetData = function(json) {
+            const badge = document.getElementById('sync-status-badge');
+            try {
+                if (!json || !json.table || !json.table.rows) {
+                    throw new Error("Invalid response");
+                }
+
+                const matrix = [];
+                const colLabels = json.table.cols.map(c => (c.label || '').trim());
+                if (colLabels.some(l => l !== '')) {
+                    matrix.push(colLabels);
+                }
+
+                json.table.rows.forEach(row => {
+                    const cells = row.c || [];
+                    matrix.push(cells.map(cell => {
+                        if (!cell) return '';
+                        if (cell.v !== undefined && cell.v !== null) return String(cell.v);
+                        if (cell.f !== undefined && cell.f !== null) return String(cell.f);
+                        return '';
+                    }));
+                });
+
+                milestones = mapRowObjects(matrix);
+                badge.textContent = "✅ محدث من السحابة (" + new Date().toLocaleTimeString('ar-SA') + ")";
+                handleSearch();
+            } catch (e) {
+                badge.textContent = "❌ تعذر قراءة بيانات الجدول";
+            }
+        };
+
+        function loadData() {
+            const badge = document.getElementById('sync-status-badge');
+            badge.textContent = "🔄 جاري جلب أحدث البيانات...";
+
+            const oldScript = document.getElementById('gviz-jsonp-script');
+            if (oldScript) oldScript.remove();
+
+            const script = document.createElement('script');
+            script.id = 'gviz-jsonp-script';
+            // استخدام headers=1 لإجبار Google على اعتبار الصف الأول عناوين أعمدة حتى لو كانت الخلية A1 فارغة
+            script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?headers=1&tqx=out:json;responseHandler:handleSheetData&gid=0&t=${Date.now()}`;
+            script.onerror = function() {
+                badge.textContent = "❌ تعذر الاتصال بالجدول (تأكد أن مشاركة الملف عامة لأي شخص لديه الرابط)";
+            };
+            document.body.appendChild(script);
+        }
+
+        function parseAmountNumber(val) {
+            if (!val) return 0;
+            const normalized = String(val).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+            const num = parseFloat(normalized.replace(/[^\d.-]/g, ''));
+            return isNaN(num) ? 0 : num;
+        }
+
+        function formatCurrency(val) {
+            const num = parseAmountNumber(val);
+            if (num === 0) return val || '$0';
+            return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        }
+
+        function updateStats() {
+            const total = milestones.length;
+            const completed = milestones.filter(m => m.status === 'completed').length;
+            const inProgress = milestones.filter(m => m.status === 'in_progress').length;
+            const upcoming = milestones.filter(m => m.status === 'upcoming').length;
+            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+            const totalPaid = milestones.reduce((sum, item) => sum + parseAmountNumber(item.amount), 0);
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-completed').textContent = completed;
+            document.getElementById('stat-in-progress').textContent = inProgress;
+            document.getElementById('stat-upcoming').textContent = upcoming;
+            document.getElementById('stat-total-paid').textContent = '$' + totalPaid.toLocaleString('en-US');
+            
+            document.getElementById('overall-percentage').textContent = `${percentage}%`;
+            document.getElementById('overall-progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-summary-text').textContent = `تم إنجاز ${completed} من أصل ${total} نقطة رئيسية`;
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.className = filter === 'payments'
+                        ? 'filter-btn active px-4 py-2 rounded-xl text-sm font-bold transition-all bg-amber-500 text-white shadow-sm flex items-center gap-1.5'
+                        : 'filter-btn active px-4 py-2 rounded-xl text-sm font-medium transition-all bg-emerald-600 text-white shadow-sm';
+                } else {
+                    btn.className = btn.dataset.filter === 'payments'
+                        ? 'filter-btn px-4 py-2 rounded-xl text-sm font-bold transition-all bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 flex items-center gap-1.5'
+                        : 'filter-btn px-4 py-2 rounded-xl text-sm font-medium transition-all bg-slate-100 text-slate-600 hover:bg-slate-200';
+                }
+            });
+            handleSearch();
+        }
+
+        function handleSearch() {
+            updateStats();
+            if (currentFilter === 'payments') {
+                renderPaymentsView();
+            } else {
+                renderMilestones();
+            }
+        }
+
+        function renderPaymentsView() {
+            document.getElementById('milestones-grid').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            const paymentsView = document.getElementById('payments-view');
+            paymentsView.classList.remove('hidden');
+
+            const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+
+            const paidItems = milestones.filter(m => {
+                const hasPayment = parseAmountNumber(m.amount) > 0 || (m.payer && m.payer.trim() !== '') || (m.payment_type && m.payment_type.trim() !== '');
+                if (!hasPayment) return false;
+                if (!searchQuery) return true;
+                return (m.title || '').toLowerCase().includes(searchQuery) ||
+                       (m.description || '').toLowerCase().includes(searchQuery) ||
+                       (m.payer || '').toLowerCase().includes(searchQuery) ||
+                       (m.payment_type || '').toLowerCase().includes(searchQuery) ||
+                       (m.date || '').toLowerCase().includes(searchQuery);
+            });
+
+            const byPayer = {};
+            const byType = {};
+            let filteredSum = 0;
+
+            paidItems.forEach(item => {
+                const amt = parseAmountNumber(item.amount);
+                filteredSum += amt;
+
+                const payerName = (item.payer || 'غير محدد').trim();
+                byPayer[payerName] = (byPayer[payerName] || 0) + amt;
+
+                const typeName = (item.payment_type || 'أخرى / غير مصنف').trim();
+                byType[typeName] = (byType[typeName] || 0) + amt;
+            });
+
+            document.getElementById('filtered-payments-total').textContent = '$' + filteredSum.toLocaleString('en-US');
+
+            const payerListEl = document.getElementById('payer-summary-list');
+            const payerEntries = Object.entries(byPayer).sort((a, b) => b[1] - a[1]);
+            payerListEl.innerHTML = payerEntries.length > 0
+                ? payerEntries.map(([name, total]) => `
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="font-bold text-sm text-slate-700 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            ${name}
+                        </span>
+                        <span class="font-heading font-extrabold text-sm text-emerald-700">$${total.toLocaleString('en-US')}</span>
+                    </div>
+                `).join('')
+                : `<p class="text-xs text-slate-400 text-center py-4">لا توجد بيانات دافعين مسجلة</p>`;
+
+            const typeListEl = document.getElementById('type-summary-list');
+            const typeEntries = Object.entries(byType).sort((a, b) => b[1] - a[1]);
+            typeListEl.innerHTML = typeEntries.length > 0
+                ? typeEntries.map(([type, total]) => `
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="font-bold text-sm text-slate-700 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            ${type}
+                        </span>
+                        <span class="font-heading font-extrabold text-sm text-amber-700">$${total.toLocaleString('en-US')}</span>
+                    </div>
+                `).join('')
+                : `<p class="text-xs text-slate-400 text-center py-4">لا توجد تصنيفات دفع مسجلة</p>`;
+
+            const tbody = document.getElementById('payments-table-body');
+            if (paidItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-center text-slate-400 text-sm">لا توجد دفعات مالية مطابقة للبحث الحالي</td></tr>`;
+            } else {
+                tbody.innerHTML = paidItems.map((item, idx) => {
+                    const statusMap = {
+                        completed: '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">منجز</span>',
+                        in_progress: '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">قيد التنفيذ</span>',
+                        upcoming: '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">مخطط له</span>'
+                    };
+                    return `
+                    <tr onclick="openDetailModal('${item.id}')" class="hover:bg-emerald-50/40 cursor-pointer transition-colors">
+                        <td class="py-3.5 px-4 text-slate-400 font-medium">${idx + 1}</td>
+                        <td class="py-3.5 px-4 font-bold text-slate-800">${item.description || item.title}</td>
+                        <td class="py-3.5 px-4 font-heading font-extrabold text-emerald-700 whitespace-nowrap">${formatCurrency(item.amount)}</td>
+                        <td class="py-3.5 px-4 font-medium text-slate-700">${item.payer || '-'}</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-1 rounded-lg bg-amber-100/80 text-amber-900 text-xs font-bold">${item.payment_type || 'عام'}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-slate-500 text-xs whitespace-nowrap">${item.date || '-'}</td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">${statusMap[item.status] || statusMap.upcoming}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            lucide.createIcons();
+        }
+
+        function renderMilestones() {
+            document.getElementById('payments-view').classList.add('hidden');
+            const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+            const filtered = milestones.filter(m => {
+                const matchesFilter = currentFilter === 'all' || m.status === currentFilter;
+                const matchesSearch = !searchQuery || 
+                    (m.title || '').toLowerCase().includes(searchQuery) || 
+                    (m.description || '').toLowerCase().includes(searchQuery) ||
+                    (m.category || '').toLowerCase().includes(searchQuery) ||
+                    (m.payer || '').toLowerCase().includes(searchQuery) ||
+                    (m.payment_type || '').toLowerCase().includes(searchQuery);
+                return matchesFilter && matchesSearch;
+            });
+
+            const completedItems = filtered.filter(m => m.status === 'completed');
+            const upcomingItems = filtered.filter(m => m.status === 'in_progress' || m.status === 'upcoming');
+
+            document.getElementById('completed-badge-count').textContent = completedItems.length;
+            document.getElementById('upcoming-badge-count').textContent = upcomingItems.length;
+
+            const gridEl = document.getElementById('milestones-grid');
+            const emptyStateEl = document.getElementById('empty-state');
+
+            if (filtered.length === 0) {
+                gridEl.classList.add('hidden');
+                emptyStateEl.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+            gridEl.classList.remove('hidden');
+            emptyStateEl.classList.add('hidden');
+
+            const completedSection = document.getElementById('completed-section');
+            const upcomingSection = document.getElementById('upcoming-section');
+
+            if (currentFilter === 'completed') {
+                completedSection.classList.remove('hidden');
+                upcomingSection.classList.add('hidden');
+                gridEl.className = 'grid grid-cols-1 gap-8 items-start';
+            } else if (currentFilter === 'in_progress' || currentFilter === 'upcoming') {
+                completedSection.classList.add('hidden');
+                upcomingSection.classList.remove('hidden');
+                gridEl.className = 'grid grid-cols-1 gap-8 items-start';
+            } else {
+                completedSection.classList.remove('hidden');
+                upcomingSection.classList.remove('hidden');
+                gridEl.className = 'grid grid-cols-1 lg:grid-cols-2 gap-8 items-start';
+            }
+
+            document.getElementById('completed-list').innerHTML = completedItems.length > 0 
+                ? completedItems.map(item => createMilestoneCard(item)).join('')
+                : `<div class="bg-white/60 border border-dashed border-slate-200 rounded-2xl p-6 text-center text-sm text-slate-400">لا توجد نقاط منجزة في هذا العرض</div>`;
+
+            document.getElementById('upcoming-list').innerHTML = upcomingItems.length > 0 
+                ? upcomingItems.map(item => createMilestoneCard(item)).join('')
+                : `<div class="bg-white/60 border border-dashed border-slate-200 rounded-2xl p-6 text-center text-sm text-slate-400">لا توجد نقاط قادمة في هذا العرض</div>`;
+
+            lucide.createIcons();
+        }
+
+        function buildPaymentBanner(item) {
+            if (!item.amount && !item.payer && !item.payment_type) return '';
+            return `
+            <div class="mt-3 mr-11 bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                ${item.amount ? `<span class="font-bold text-emerald-700 flex items-center gap-1"><i data-lucide="banknote" class="w-3.5 h-3.5"></i> ${formatCurrency(item.amount)}</span>` : ''}
+                ${item.payer ? `<span class="text-slate-600 flex items-center gap-1"><i data-lucide="user-check" class="w-3.5 h-3.5 text-slate-400"></i> الدافع: <strong>${item.payer}</strong></span>` : ''}
+                ${item.payment_type ? `<span class="px-2 py-0.5 rounded-md bg-amber-100/80 text-amber-800 font-medium">${item.payment_type}</span>` : ''}
+            </div>`;
+        }
+
+        function createMilestoneCard(item) {
+            const isCompleted = item.status === 'completed';
+            const isInProgress = item.status === 'in_progress';
+            const priorityConfig = {
+                high: { label: 'أولوية عالية', class: 'text-rose-600 bg-rose-50 border-rose-100' },
+                medium: { label: 'أولوية متوسطة', class: 'text-amber-700 bg-amber-50 border-amber-100' },
+                low: { label: 'اعتيادية', class: 'text-slate-600 bg-slate-100 border-slate-200' }
+            };
+            const priority = priorityConfig[item.priority] || priorityConfig.medium;
+            const paymentHTML = buildPaymentBanner(item);
+            const displayHeading = item.description ? `${item.title} — ${item.description}` : item.title;
+
+            if (isCompleted) {
+                return `
+                <article onclick="openDetailModal('${item.id}')" class="group cursor-pointer bg-white hover:bg-emerald-50/30 rounded-2xl p-5 border border-slate-200/90 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-1.5 h-full bg-emerald-500"></div>
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-emerald-100/80 text-emerald-800">تم الإنجاز</span>
+                                <span class="text-[11px] text-slate-400 font-medium">${item.category || 'عام'}</span>
+                            </div>
+                            <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800 group-hover:text-emerald-800 transition-colors">${displayHeading}</h3>
+                        </div>
+                    </div>
+                    ${paymentHTML}
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 pr-11">
+                        <span class="flex items-center gap-1.5 text-emerald-700 font-medium">
+                            <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i> أُنجز في: ${item.date || 'غير محدد'}
+                        </span>
+                        <span class="text-slate-400 group-hover:text-emerald-600 flex items-center gap-1 font-medium">التفاصيل <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></span>
+                    </div>
+                </article>`;
+            } else {
+                const statusBadge = isInProgress 
+                    ? `<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-800"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> قيد التنفيذ</span>`
+                    : `<span class="inline-flex items-center text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700">مخطط له</span>`;
+                const stripeColor = isInProgress ? 'bg-amber-400' : 'bg-indigo-400';
+
+                return `
+                <article onclick="openDetailModal('${item.id}')" class="group cursor-pointer bg-white hover:bg-amber-50/20 rounded-2xl p-5 border border-slate-200/90 hover:border-amber-300 shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-1.5 h-full ${stripeColor}"></div>
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-8 h-8 rounded-full ${isInProgress ? 'bg-amber-100 text-amber-600' : 'bg-indigo-50 text-indigo-600'} flex items-center justify-center shrink-0 mt-0.5">
+                            <i data-lucide="${isInProgress ? 'clock' : 'calendar'}" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                ${statusBadge}
+                                <span class="text-[11px] font-medium px-2 py-0.5 rounded-md border ${priority.class}">${priority.label}</span>
+                            </div>
+                            <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800 group-hover:text-amber-900 transition-colors">${displayHeading}</h3>
+                        </div>
+                    </div>
+                    ${paymentHTML}
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 pr-11">
+                        <span class="flex items-center gap-1.5 font-medium text-slate-600">
+                            <i data-lucide="calendar-range" class="w-3.5 h-3.5 text-amber-600"></i> الموعد المتوقع: ${item.date || 'غير محدد'}
+                        </span>
+                        <span class="text-slate-400 group-hover:text-amber-700 flex items-center gap-1 font-medium">التفاصيل <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></span>
+                    </div>
+                </article>`;
+            }
+        }
+
+        function openDetailModal(id) {
+            const item = milestones.find(m => String(m.id) === String(id));
+            if (!item) return;
+
+            const badgeEl = document.getElementById('detail-status-badge');
+            document.getElementById('detail-title').textContent = item.title;
+            document.getElementById('detail-description').textContent = item.description || 'لا يوجد وصف إضافي';
+            document.getElementById('detail-date').innerHTML = `<i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i> ${item.date || 'غير محدد'}`;
+            document.getElementById('detail-category').textContent = item.category || 'التطوير العام';
+
+            document.getElementById('detail-amount').textContent = item.amount ? formatCurrency(item.amount) : 'لا يوجد';
+            document.getElementById('detail-payer').textContent = item.payer || 'غير محدد';
+            document.getElementById('detail-payment-type').textContent = item.payment_type || 'غير محدد';
+
+            const priorityNames = { high: 'عالية الأهمية', medium: 'متوسطة', low: 'اعتيادية' };
+            document.getElementById('detail-priority').innerHTML = `<i data-lucide="flag" class="w-4 h-4 text-amber-500"></i> ${priorityNames[item.priority] || 'متوسطة'}`;
+
+            if (item.status === 'completed') {
+                badgeEl.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2 bg-emerald-100 text-emerald-800';
+                badgeEl.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> نقطة منجزة`;
+            } else {
+                const isProg = item.status === 'in_progress';
+                badgeEl.className = isProg 
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2 bg-amber-100 text-amber-800'
+                    : 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2 bg-indigo-100 text-indigo-800';
+                badgeEl.innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5"></i> ${isProg ? 'قيد التنفيذ حالياً' : 'مخطط له مستقبلاً'}`;
+            }
+
+            const modal = document.getElementById('detail-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    </script>
+</body>
+</html>
