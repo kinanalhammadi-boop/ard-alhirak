@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة مشروع أرض الحراك | متابعة الإنجازات والمدفوعات</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Tajawal', 'Cairo', 'sans-serif'],
+                        heading: ['Cairo', 'Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0f292e',
+                            primary: '#059669',
+                            light: '#10b981',
+                            mint: '#ecfdf5',
+                            gold: '#d97706',
+                            goldLight: '#fef3c7',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        h1, h2, h3, h4, .font-heading { font-family: 'Cairo', sans-serif; }
+        .progress-bar-fill { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-emerald-100 selection:text-emerald-900">
+
+    <!-- الشريط العلوي (Navbar) -->
+    <nav class="bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-800 flex items-center justify-center text-white shadow-md shadow-emerald-600/20">
+                        <i data-lucide="compass" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="font-heading font-bold text-lg text-slate-800 block leading-tight">أرض الحراك</span>
+                        <span id="sync-status-badge" class="text-xs text-emerald-700 font-medium">جاري التحقق من المزامنة...</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="loadData()" title="تحديث البيانات من السحابة" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-4 py-2 rounded-xl font-medium text-sm shadow-sm shadow-emerald-600/20 transition-all flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        <span>تحديث البيانات</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- القسم الترحيبي ولوحة الإنجاز الكلية -->
+    <header class="bg-gradient-to-bl from-brand-dark via-[#133b42] to-emerald-950 text-white relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+        <div class="absolute bottom-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-medium">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>خارطة الطريق والمتابعة المالية 2026</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold tracking-tight leading-tight">
+                        بوابة مشروع <span class="text-transparent bg-clip-text bg-gradient-to-l from-emerald-300 to-amber-200">أرض الحراك</span>
+                    </h1>
+                    <p class="text-slate-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+                        منصة مركزية محدثة لحظياً لاستعراض المنجزات المحققة، المراحل القادمة، وسجل المدفوعات والتكاليف لكل مرحلة بشفافية تامة.
+                    </p>
+                </div>
+
+                <!-- بطاقة شريط التقدم الكلي -->
+                <div class="lg:col-span-5">
+                    <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-6 shadow-xl">
+                        <div class="flex justify-between items-end mb-3">
+                            <div>
+                                <span class="text-emerald-200 text-sm font-medium block">نسبة الإنجاز الكلية للمشروع</span>
+                                <span class="text-xs text-slate-300">تُحدَّث تلقائياً بناءً على النقاط المنجزة</span>
+                            </div>
+                            <span id="overall-percentage" class="text-4xl font-heading font-extrabold text-amber-300">0%</span>
+                        </div>
+                        
+                        <div class="w-full h-4 bg-slate-900/60 rounded-full overflow-hidden p-0.5 border border-white/10">
+                            <div id="overall-progress-bar" class="h-full bg-gradient-to-l from-emerald-400 via-emerald-500 to-amber-300 rounded-full progress-bar-fill" style="width: 0%"></div>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-white/10 flex justify-between text-xs text-slate-300">
+                            <span id="progress-summary-text">جاري حساب النقاط...</span>
+                            <span class="text-emerald-300 font-medium flex items-center gap-1">
+                                <i data-lucide="cloud-check" class="w-3.5 h-3.5"></i>
+                                مزامنة سحابية
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- البطاقات الإحصائية السريعة -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mt-10">
+                <div onclick="setFilter('all')" class="cursor-pointer bg-white/10 hover:bg-white/15 transition-all border border-white/10 rounded-2xl p-4 flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-slate-800/80 text-white flex items-center justify-center shrink-0">
+                        <i data-lucide="layers" class="w-5 h-5 text-sky-300"></i>
+                    </div>
+                    <div>
+                        <p class="text-slate-300 text-xs">إجمالي النقاط</p>
+                        <p id="stat-total" class="text-xl sm:text-2xl font-heading font-bold text-white">0</p>
+                    </div>
+                </div>
+
+                <div onclick="setFilter('completed')" class="cursor-pointer bg-white/10 hover:bg-white/15 transition-all border border-white/10 rounded-2xl p-4 flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0">
+                        <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-emerald-200 text-xs">تم الإنجاز</p>
+                        <p id="stat-completed" class="text-xl sm:text-2xl font-heading font-bold text-white">0</p>
+                    </div>
+                </div>
+
+                <div onclick="setFilter('in_progress')" class="cursor-pointer bg-white/10 hover:bg-white/15 transition-all border border-white/10 rounded-2xl p-4 flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                        <i data-lucide="loader-2" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-amber-200 text-xs">قيد التنفيذ</p>
+                        <p id="stat-in-progress" class="text-xl sm:text-2xl font-heading font-bold text-white">0</p>
+                    </div>
+                </div>
+
+                <div onclick="setFilter('upcoming')" class="cursor-pointer bg-white/10 hover:bg-white/15 transition-all border border-white/10 rounded-2xl p-4 flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center shrink-0">
+                        <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="text-indigo-200 text-xs">مخطط له</p>
+                        <p id="stat-upcoming" class="text-xl sm:text-2xl font-heading font-bold text-white">0</p>
+                    </div>
+                </div>
+
+                <div onclick="setFilter('payments')" title="اضغط لعرض تفاصيل جميع الدفعات" class="col-span-2 sm:col-span-1 cursor-pointer bg-gradient-to-br from-amber-500/25 to-emerald-500/25 hover:from-amber-500/35 hover:to-emerald-500/35 transition-all border border-amber-300/40 rounded-2xl p-4 flex items-center justify-between gap-3 shadow-lg">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-amber-400/25 text-amber-300 flex items-center justify-center shrink-0">
+                            <i data-lucide="wallet" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="text-amber-200 text-xs font-medium">إجمالي المدفوع</p>
+                            <p id="stat-total-paid" class="text-lg sm:text-xl font-heading font-extrabold text-amber-300">0</p>
+                        </div>
+                    </div>
+                    <i data-lucide="chevron-left" class="w-4 h-4 text-amber-200 shrink-0"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <section class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80 flex flex-col lg:flex-row justify-between items-center gap-4">
+            <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto" id="filter-buttons">
+                <button data-filter="all" onclick="setFilter('all')" class="filter-btn active px-4 py-2 rounded-xl text-sm font-medium transition-all bg-emerald-600 text-white shadow-sm">الكل</button>
+                <button data-filter="completed" onclick="setFilter('completed')" class="filter-btn px-4 py-2 rounded-xl text-sm font-medium transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">تم الإنجاز</button>
+                <button data-filter="in_progress" onclick="setFilter('in_progress')" class="filter-btn px-4 py-2 rounded-xl text-sm font-medium transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">قيد التنفيذ</button>
+                <button data-filter="upcoming" onclick="setFilter('upcoming')" class="filter-btn px-4 py-2 rounded-xl text-sm font-medium transition-all bg-slate-100 text-slate-600 hover:bg-slate-200">القادم (مخطط له)</button>
+                <button data-filter="payments" onclick="setFilter('payments')" class="filter-btn px-4 py-2 rounded-xl text-sm font-bold transition-all bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 flex items-center gap-1.5">
+                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                    <span>إجمالي المدفوع (التفاصيل)</span>
+                </button>
+            </div>
+
+            <div class="relative w-full lg:w-80">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
+                <input type="text" id="search-input" oninput="handleSearch()" placeholder="ابحث بالعنوان، الدافع، أو نوع الدفعة..." 
+                    class="w-full pl-4 pr-10 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all">
+            </div>
+        </section>
+
+        <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="folder-search" class="w-8 h-8"></i>
+            </div>
+            <h3 class="font-heading font-bold text-lg text-slate-700">لا توجد بيانات مطابقة لبحثك</h3>
+            <p class="text-slate-500 text-sm mt-1">جرب تغيير كلمات البحث أو العودة لعرض الكل.</p>
+            <button onclick="setFilter('all'); document.getElementById('search-input').value=''; handleSearch();" class="mt-4 px-4 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-medium transition-colors">عرض جميع النقاط</button>
+        </div>
+
+        <!-- 1. عرض المراحل والنقاط -->
+        <div id="milestones-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            <section id="completed-section" class="space-y-4">
+                <div class="flex items-center justify-between bg-emerald-50/90 border border-emerald-200/80 px-5 py-3.5 rounded-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-heading font-bold text-lg text-emerald-950">النقاط التي تم إنجازها</h2>
+                            <p class="text-xs text-emerald-700">مراحل مكتملة ومعتمدة في مسار المشروع</p>
+                        </div>
+                    </div>
+                    <span id="completed-badge-count" class="bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full">0</span>
+                </div>
+                <div id="completed-list" class="space-y-4"></div>
+            </section>
+
+            <section id="upcoming-section" class="space-y-4">
+                <div class="flex items-center justify-between bg-amber-50/90 border border-amber-200/80 px-5 py-3.5 rounded-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm">
+                            <i data-lucide="rocket" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-heading font-bold text-lg text-amber-950">النقاط القادمة وقيد التنفيذ</h2>
+                            <p class="text-xs text-amber-800">الخطوات الجارية والمستهدفات المستقبلية</p>
+                        </div>
+                    </div>
+                    <span id="upcoming-badge-count" class="bg-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full">0</span>
+                </div>
+                <div id="upcoming-list" class="space-y-4"></div>
+            </section>
+        </div>
+
+        <!-- 2. تبويب تفاصيل المدفوعات -->
+        <section id="payments-view" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm">
+                    <div class="flex items-center gap-2.5 mb-4 pb-3 border-b border-slate-100">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-base text-slate-800">إجمالي المدفوع حسب الجهة الدافعة</h3>
+                    </div>
+                    <div id="payer-summary-list" class="space-y-2.5"></div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm">
+                    <div class="flex items-center gap-2.5 mb-4 pb-3 border-b border-slate-100">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+                            <i data-lucide="pie-chart" class="w-4 h-4"></i>
+                        </div>
+                        <h3 class="font-heading font-bold text-base text-slate-800">توزيع المدفوعات حسب طبيعة الصرف</h3>
+                    </div>
+                    <div id="type-summary-list" class="space-y-2.5"></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+                <div class="p-5 bg-gradient-to-l from-amber-50/70 to-emerald-50/70 border-b border-slate-200/80 flex flex-wrap justify-between items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm">
+                            <i data-lucide="receipt" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-heading font-bold text-lg text-slate-800">السجل التفصيلي للمدفوعات</h2>
+                            <p class="text-xs text-slate-500">جميع البنود التي تم تسجيل مبالغ مالية عليها</p>
+                        </div>
+                    </div>
+                    <div class="bg-white px-4 py-2 rounded-xl border border-amber-200 shadow-sm">
+                        <span class="text-xs text-slate-500 ml-2">المجموع المعروض:</span>
+                        <span id="filtered-payments-total" class="font-heading font-extrabold text-base text-emerald-700">0 ريال</span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500">
+                                <th class="py-3.5 px-4">#</th>
+                                <th class="py-3.5 px-4">البند / المرحلة</th>
+                                <th class="py-3.5 px-4">المبلغ المدفوع</th>
+                                <th class="py-3.5 px-4">الجهة الدافعة</th>
+                                <th class="py-3.5 px-4">طبيعة الدفعة</th>
+                                <th class="py-3.5 px-4">التاريخ</th>
+                                <th class="py-3.5 px-4">الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="payments-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- نافذة عرض التفاصيل الكاملة -->
+    <div id="detail-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-100 overflow-hidden" onclick="event.stopPropagation()">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-start gap-4 bg-slate-50/70">
+                <div>
+                    <div id="detail-status-badge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2"></div>
+                    <h3 id="detail-title" class="font-heading font-bold text-xl text-slate-800 leading-snug"></h3>
+                </div>
+                <button onclick="closeDetailModal()" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div>
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">وصف المرحلة والتفاصيل</h4>
+                    <p id="detail-description" class="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100"></p>
+                </div>
+
+                <div class="bg-emerald-50/60 border border-emerald-200/80 rounded-2xl p-4 space-y-3">
+                    <h4 class="text-xs font-bold text-emerald-900 flex items-center gap-1.5">
+                        <i data-lucide="banknote" class="w-4 h-4 text-emerald-600"></i>
+                        بيانات الدفعة المالية
+                    </h4>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                            <span class="text-[11px] text-slate-400 block">المبلغ المدفوع</span>
+                            <span id="detail-amount" class="font-heading font-extrabold text-sm text-emerald-700">-</span>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                            <span class="text-[11px] text-slate-400 block">الجهة الدافعة</span>
+                            <span id="detail-payer" class="font-bold text-xs text-slate-700">-</span>
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                            <span class="text-[11px] text-slate-400 block">طبيعة الدفع</span>
+                            <span id="detail-payment-type" class="font-bold text-xs text-amber-700">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                        <span class="text-xs text-slate-400 block mb-1">التاريخ / الجدول الزمني</span>
+                        <span id="detail-date" class="font-bold text-sm text-slate-700 flex items-center gap-1.5"></span>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                        <span class="text-xs text-slate-400 block mb-1">مستوى الأولوية</span>
+                        <span id="detail-priority" class="font-bold text-sm text-slate-700 flex items-center gap-1.5"></span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 flex items-center justify-between">
+                    <span class="text-xs text-slate-500">المسار / القسم المسؤول:</span>
+                    <span id="detail-category" class="text-xs font-bold px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-700"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span>بوابة متابعة مشروع <strong>أرض الحراك</strong> — جميع الحقوق محفوظة © 2026</span>
+            </div>
+            <p class="text-xs text-slate-400">مرتبطة مركزياً بقاعدة بيانات Google Sheets السحابية</p>
+        </div>
+    </footer>
+
+    <script>
+        const SHEET_ID = "1EixQRu-g_njuIGjd7xiQDg2QQ7svCmr3nKm6OkxseMk";
+        const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=0`;
+
+        const defaultMilestones = [
+            { id: "1", title: "استخراج التراخيص والموافقات المبدئية", description: "إنهاء إجراءات التصاريح الرسمية للمشروع.", status: "completed", date: "أكتوبر 2026", priority: "high", category: "التراخيص", amount: "15000", payer: "الشريك الأول", payment_type: "تراخيص" },
+            { id: "2", title: "أعمال التسوية وتجهيز الموقع", description: "تعاقد مع مقاول الحفر والتسوية الميدانية.", status: "in_progress", date: "نوفمبر 2026", priority: "high", category: "الإنشاءات", amount: "45000", payer: "الشريك الثاني", payment_type: "مقاول" }
+        ];
+
+        let milestones = [];
+        let currentFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            document.getElementById('detail-modal').addEventListener('click', closeDetailModal);
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetailModal(); });
+        });
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split(/\r?\n/).filter(l => l.trim().length > 0);
+            if (lines.length < 2) return [];
+            const headers = parseCSVLine(lines[0]).map(h => h.replace(/^"|"$/g, '').trim().toLowerCase());
+            return lines.slice(1).map((line, idx) => {
+                const values = parseCSVLine(line);
+                const obj = { id: String(idx + 1) };
+                headers.forEach((h, i) => {
+                    obj[h] = (values[i] || '').replace(/^"|"$/g, '').trim();
+                });
+                return obj;
+            });
+        }
+
+        async function fetchWithTimeout(url, timeout = 6000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), timeout);
+            try {
+                const response = await fetch(url, { signal: controller.signal });
+                clearTimeout(timer);
+                return response;
+            } catch (error) {
+                clearTimeout(timer);
+                throw error;
+            }
+        }
+
+        async function loadData() {
+            const badge = document.getElementById('sync-status-badge');
+            const targetUrl = SHEET_CSV_URL + "&t=" + Date.now();
+            
+            badge.textContent = "🔄 جاري جلب أحدث البيانات...";
+            try {
+                const res = await fetchWithTimeout(targetUrl, 6000);
+                if (!res.ok) throw new Error("Direct fetch failed");
+                const text = await res.text();
+                
+                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                    throw new Error("Sheet requires Publish to Web");
+                }
+                
+                const parsed = parseCSV(text);
+                if (parsed.length > 0) {
+                    milestones = parsed;
+                    badge.textContent = "✅ محدث من السحابة (" + new Date().toLocaleTimeString('ar-SA') + ")";
+                } else {
+                    milestones = [...defaultMilestones];
+                    badge.textContent = "⚠️ الجدول فارغ، أضف صفوفاً في Google Sheet";
+                }
+            } catch (err) {
+                try {
+                    const fallbackExportUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0&t=${Date.now()}`;
+                    const res2 = await fetchWithTimeout(fallbackExportUrl, 6000);
+                    const text2 = await res2.text();
+                    if (text2.trim().startsWith('<!DOCTYPE') || text2.trim().startsWith('<html')) {
+                        throw new Error("Restricted");
+                    }
+                    const parsed2 = parseCSV(text2);
+                    if (parsed2.length > 0) {
+                        milestones = parsed2;
+                        badge.textContent = "✅ محدث من السحابة (" + new Date().toLocaleTimeString('ar-SA') + ")";
+                    } else {
+                        throw new Error("Empty");
+                    }
+                } catch (err2) {
+                    milestones = [...defaultMilestones];
+                    badge.textContent = "❌ يرجى التأكد من تفعيل Publish to web في الجدول";
+                }
+            }
+            handleSearch();
+        }
+
+        function parseAmountNumber(val) {
+            if (!val) return 0;
+            const normalized = String(val).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+            const num = parseFloat(normalized.replace(/[^\d.-]/g, ''));
+            return isNaN(num) ? 0 : num;
+        }
+
+        function formatCurrency(val) {
+            const num = parseAmountNumber(val);
+            if (num === 0) return val || '0 ريال';
+            return num.toLocaleString('en-US') + ' ريال';
+        }
+
+        function updateStats() {
+            const total = milestones.length;
+            const completed = milestones.filter(m => m.status === 'completed').length;
+            const inProgress = milestones.filter(m => m.status === 'in_progress').length;
+            const upcoming = milestones.filter(m => m.status === 'upcoming').length;
+            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+            const totalPaid = milestones.reduce((sum, item) => sum + parseAmountNumber(item.amount), 0);
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-completed').textContent = completed;
+            document.getElementById('stat-in-progress').textContent = inProgress;
+            document.getElementById('stat-upcoming').textContent = upcoming;
+            document.getElementById('stat-total-paid').textContent = totalPaid.toLocaleString('en-US') + ' ريال';
+            
+            document.getElementById('overall-percentage').textContent = `${percentage}%`;
+            document.getElementById('overall-progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-summary-text').textContent = `تم إنجاز ${completed} من أصل ${total} نقطة رئيسية`;
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.className = filter === 'payments'
+                        ? 'filter-btn active px-4 py-2 rounded-xl text-sm font-bold transition-all bg-amber-500 text-white shadow-sm flex items-center gap-1.5'
+                        : 'filter-btn active px-4 py-2 rounded-xl text-sm font-medium transition-all bg-emerald-600 text-white shadow-sm';
+                } else {
+                    btn.className = btn.dataset.filter === 'payments'
+                        ? 'filter-btn px-4 py-2 rounded-xl text-sm font-bold transition-all bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 flex items-center gap-1.5'
+                        : 'filter-btn px-4 py-2 rounded-xl text-sm font-medium transition-all bg-slate-100 text-slate-600 hover:bg-slate-200';
+                }
+            });
+            handleSearch();
+        }
+
+        function handleSearch() {
+            updateStats();
+            if (currentFilter === 'payments') {
+                renderPaymentsView();
+            } else {
+                renderMilestones();
+            }
+        }
+
+        function renderPaymentsView() {
+            document.getElementById('milestones-grid').classList.add('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            const paymentsView = document.getElementById('payments-view');
+            paymentsView.classList.remove('hidden');
+
+            const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+
+            const paidItems = milestones.filter(m => {
+                const hasPayment = parseAmountNumber(m.amount) > 0 || (m.payer && m.payer.trim() !== '') || (m.payment_type && m.payment_type.trim() !== '');
+                if (!hasPayment) return false;
+                if (!searchQuery) return true;
+                return (m.title || '').toLowerCase().includes(searchQuery) ||
+                       (m.payer || '').toLowerCase().includes(searchQuery) ||
+                       (m.payment_type || '').toLowerCase().includes(searchQuery) ||
+                       (m.date || '').toLowerCase().includes(searchQuery);
+            });
+
+            const byPayer = {};
+            const byType = {};
+            let filteredSum = 0;
+
+            paidItems.forEach(item => {
+                const amt = parseAmountNumber(item.amount);
+                filteredSum += amt;
+
+                const payerName = (item.payer || 'غير محدد').trim();
+                byPayer[payerName] = (byPayer[payerName] || 0) + amt;
+
+                const typeName = (item.payment_type || 'أخرى / غير مصنف').trim();
+                byType[typeName] = (byType[typeName] || 0) + amt;
+            });
+
+            document.getElementById('filtered-payments-total').textContent = filteredSum.toLocaleString('en-US') + ' ريال';
+
+            const payerListEl = document.getElementById('payer-summary-list');
+            const payerEntries = Object.entries(byPayer).sort((a, b) => b[1] - a[1]);
+            payerListEl.innerHTML = payerEntries.length > 0
+                ? payerEntries.map(([name, total]) => `
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="font-bold text-sm text-slate-700 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            ${name}
+                        </span>
+                        <span class="font-heading font-extrabold text-sm text-emerald-700">${total.toLocaleString('en-US')} ريال</span>
+                    </div>
+                `).join('')
+                : `<p class="text-xs text-slate-400 text-center py-4">لا توجد بيانات دافعين مسجلة</p>`;
+
+            const typeListEl = document.getElementById('type-summary-list');
+            const typeEntries = Object.entries(byType).sort((a, b) => b[1] - a[1]);
+            typeListEl.innerHTML = typeEntries.length > 0
+                ? typeEntries.map(([type, total]) => `
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="font-bold text-sm text-slate-700 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            ${type}
+                        </span>
+                        <span class="font-heading font-extrabold text-sm text-amber-700">${total.toLocaleString('en-US')} ريال</span>
+                    </div>
+                `).join('')
+                : `<p class="text-xs text-slate-400 text-center py-4">لا توجد تصنيفات دفع مسجلة</p>`;
+
+            const tbody = document.getElementById('payments-table-body');
+            if (paidItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-center text-slate-400 text-sm">لا توجد دفعات مالية مطابقة للبحث الحالي</td></tr>`;
+            } else {
+                tbody.innerHTML = paidItems.map((item, idx) => {
+                    const statusMap = {
+                        completed: '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">منجز</span>',
+                        in_progress: '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">قيد التنفيذ</span>',
+                        upcoming: '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">مخطط له</span>'
+                    };
+                    return `
+                    <tr onclick="openDetailModal('${item.id}')" class="hover:bg-emerald-50/40 cursor-pointer transition-colors">
+                        <td class="py-3.5 px-4 text-slate-400 font-medium">${idx + 1}</td>
+                        <td class="py-3.5 px-4 font-bold text-slate-800">${item.title || 'بدون عنوان'}</td>
+                        <td class="py-3.5 px-4 font-heading font-extrabold text-emerald-700 whitespace-nowrap">${formatCurrency(item.amount)}</td>
+                        <td class="py-3.5 px-4 font-medium text-slate-700">${item.payer || '-'}</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-1 rounded-lg bg-amber-100/80 text-amber-900 text-xs font-bold">${item.payment_type || 'عام'}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-slate-500 text-xs whitespace-nowrap">${item.date || '-'}</td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">${statusMap[item.status] || statusMap.upcoming}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            lucide.createIcons();
+        }
+
+        function renderMilestones() {
+            document.getElementById('payments-view').classList.add('hidden');
+            const searchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+            const filtered = milestones.filter(m => {
+                const matchesFilter = currentFilter === 'all' || m.status === currentFilter;
+                const matchesSearch = !searchQuery || 
+                    (m.title || '').toLowerCase().includes(searchQuery) || 
+                    (m.description || '').toLowerCase().includes(searchQuery) ||
+                    (m.category || '').toLowerCase().includes(searchQuery) ||
+                    (m.payer || '').toLowerCase().includes(searchQuery) ||
+                    (m.payment_type || '').toLowerCase().includes(searchQuery);
+                return matchesFilter && matchesSearch;
+            });
+
+            const completedItems = filtered.filter(m => m.status === 'completed');
+            const upcomingItems = filtered.filter(m => m.status === 'in_progress' || m.status === 'upcoming');
+
+            document.getElementById('completed-badge-count').textContent = completedItems.length;
+            document.getElementById('upcoming-badge-count').textContent = upcomingItems.length;
+
+            const gridEl = document.getElementById('milestones-grid');
+            const emptyStateEl = document.getElementById('empty-state');
+
+            if (filtered.length === 0) {
+                gridEl.classList.add('hidden');
+                emptyStateEl.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+            gridEl.classList.remove('hidden');
+            emptyStateEl.classList.add('hidden');
+
+            const completedSection = document.getElementById('completed-section');
+            const upcomingSection = document.getElementById('upcoming-section');
+
+            if (currentFilter === 'completed') {
+                completedSection.classList.remove('hidden');
+                upcomingSection.classList.add('hidden');
+                gridEl.className = 'grid grid-cols-1 gap-8 items-start';
+            } else if (currentFilter === 'in_progress' || currentFilter === 'upcoming') {
+                completedSection.classList.add('hidden');
+                upcomingSection.classList.remove('hidden');
+                gridEl.className = 'grid grid-cols-1 gap-8 items-start';
+            } else {
+                completedSection.classList.remove('hidden');
+                upcomingSection.classList.remove('hidden');
+                gridEl.className = 'grid grid-cols-1 lg:grid-cols-2 gap-8 items-start';
+            }
+
+            document.getElementById('completed-list').innerHTML = completedItems.length > 0 
+                ? completedItems.map(item => createMilestoneCard(item)).join('')
+                : `<div class="bg-white/60 border border-dashed border-slate-200 rounded-2xl p-6 text-center text-sm text-slate-400">لا توجد نقاط منجزة في هذا العرض</div>`;
+
+            document.getElementById('upcoming-list').innerHTML = upcomingItems.length > 0 
+                ? upcomingItems.map(item => createMilestoneCard(item)).join('')
+                : `<div class="bg-white/60 border border-dashed border-slate-200 rounded-2xl p-6 text-center text-sm text-slate-400">لا توجد نقاط قادمة في هذا العرض</div>`;
+
+            lucide.createIcons();
+        }
+
+        function buildPaymentBanner(item) {
+            if (!item.amount && !item.payer && !item.payment_type) return '';
+            return `
+            <div class="mt-3 mr-11 bg-slate-50 border border-slate-200/80 rounded-xl px-3 py-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+                ${item.amount ? `<span class="font-bold text-emerald-700 flex items-center gap-1"><i data-lucide="banknote" class="w-3.5 h-3.5"></i> ${formatCurrency(item.amount)}</span>` : ''}
+                ${item.payer ? `<span class="text-slate-600 flex items-center gap-1"><i data-lucide="user-check" class="w-3.5 h-3.5 text-slate-400"></i> الدافع: <strong>${item.payer}</strong></span>` : ''}
+                ${item.payment_type ? `<span class="px-2 py-0.5 rounded-md bg-amber-100/80 text-amber-800 font-medium">${item.payment_type}</span>` : ''}
+            </div>`;
+        }
+
+        function createMilestoneCard(item) {
+            const isCompleted = item.status === 'completed';
+            const isInProgress = item.status === 'in_progress';
+            const priorityConfig = {
+                high: { label: 'أولوية عالية', class: 'text-rose-600 bg-rose-50 border-rose-100' },
+                medium: { label: 'أولوية متوسطة', class: 'text-amber-700 bg-amber-50 border-amber-100' },
+                low: { label: 'اعتيادية', class: 'text-slate-600 bg-slate-100 border-slate-200' }
+            };
+            const priority = priorityConfig[item.priority] || priorityConfig.medium;
+            const paymentHTML = buildPaymentBanner(item);
+
+            if (isCompleted) {
+                return `
+                <article onclick="openDetailModal('${item.id}')" class="group cursor-pointer bg-white hover:bg-emerald-50/30 rounded-2xl p-5 border border-slate-200/90 hover:border-emerald-300 shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-1.5 h-full bg-emerald-500"></div>
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-emerald-100/80 text-emerald-800">تم الإنجاز</span>
+                                <span class="text-[11px] text-slate-400 font-medium">${item.category || 'عام'}</span>
+                            </div>
+                            <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800 group-hover:text-emerald-800 transition-colors">${item.title}</h3>
+                        </div>
+                    </div>
+                    <p class="text-slate-600 text-sm mt-2.5 line-clamp-2 pr-11 leading-relaxed">${item.description || ''}</p>
+                    ${paymentHTML}
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 pr-11">
+                        <span class="flex items-center gap-1.5 text-emerald-700 font-medium">
+                            <i data-lucide="calendar-check" class="w-3.5 h-3.5"></i> أُنجز في: ${item.date || 'غير محدد'}
+                        </span>
+                        <span class="text-slate-400 group-hover:text-emerald-600 flex items-center gap-1 font-medium">التفاصيل <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></span>
+                    </div>
+                </article>`;
+            } else {
+                const statusBadge = isInProgress 
+                    ? `<span class="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-amber-100 text-amber-800"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> قيد التنفيذ</span>`
+                    : `<span class="inline-flex items-center text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700">مخطط له</span>`;
+                const stripeColor = isInProgress ? 'bg-amber-400' : 'bg-indigo-400';
+
+                return `
+                <article onclick="openDetailModal('${item.id}')" class="group cursor-pointer bg-white hover:bg-amber-50/20 rounded-2xl p-5 border border-slate-200/90 hover:border-amber-300 shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-1.5 h-full ${stripeColor}"></div>
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-8 h-8 rounded-full ${isInProgress ? 'bg-amber-100 text-amber-600' : 'bg-indigo-50 text-indigo-600'} flex items-center justify-center shrink-0 mt-0.5">
+                            <i data-lucide="${isInProgress ? 'clock' : 'calendar'}" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                ${statusBadge}
+                                <span class="text-[11px] font-medium px-2 py-0.5 rounded-md border ${priority.class}">${priority.label}</span>
+                            </div>
+                            <h3 class="font-heading font-bold text-base sm:text-lg text-slate-800 group-hover:text-amber-900 transition-colors">${item.title}</h3>
+                        </div>
+                    </div>
+                    <p class="text-slate-600 text-sm mt-2.5 line-clamp-2 pr-11 leading-relaxed">${item.description || ''}</p>
+                    ${paymentHTML}
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 pr-11">
+                        <span class="flex items-center gap-1.5 font-medium text-slate-600">
+                            <i data-lucide="calendar-range" class="w-3.5 h-3.5 text-amber-600"></i> الموعد المتوقع: ${item.date || 'غير محدد'}
+                        </span>
+                        <span class="text-slate-400 group-hover:text-amber-700 flex items-center gap-1 font-medium">التفاصيل <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i></span>
+                    </div>
+                </article>`;
+            }
+        }
+
+        function openDetailModal(id) {
+            const item = milestones.find(m => String(m.id) === String(id));
+            if (!item) return;
+
+            const badgeEl = document.getElementById('detail-status-badge');
+            document.getElementById('detail-title').textContent = item.title;
+            document.getElementById('detail-description').textContent = item.description || 'لا يوجد وصف إضافي';
+            document.getElementById('detail-date').innerHTML = `<i data-lucide="calendar" class="w-4 h-4 text-emerald-600"></i> ${item.date || 'غير محدد'}`;
+            document.getElementById('detail-category').textContent = item.category || 'التطوير العام';
+
+            document.getElementById('detail-amount').textContent = item.amount ? formatCurrency(item.amount) : 'لا يوجد';
+            document.getElementById('detail-payer').textContent = item.payer || 'غير محدد';
+            document.getElementById('detail-payment-type').textContent = item.payment_type || 'غير محدد';
+
+            const priorityNames = { high: 'عالية الأهمية', medium: 'متوسطة', low: 'اعتيادية' };
+            document.getElementById('detail-priority').innerHTML = `<i data-lucide="flag" class="w-4 h-4 text-amber-500"></i> ${priorityNames[item.priority] || 'متوسطة'}`;
+
+            if (item.status === 'completed') {
+                badgeEl.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2 bg-emerald-100 text-emerald-800';
+                badgeEl.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> نقطة منجزة`;
+            } else {
+                const isProg = item.status === 'in_progress';
+                badgeEl.className = isProg 
+                    ? 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2 bg-amber-100 text-amber-800'
+                    : 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-2 bg-indigo-100 text-indigo-800';
+                badgeEl.innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5"></i> ${isProg ? 'قيد التنفيذ حالياً' : 'مخطط له مستقبلاً'}`;
+            }
+
+            const modal = document.getElementById('detail-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    </script>
+</body>
+</html>
